@@ -7,7 +7,7 @@ import json
 def sortline(pts,limit):
     xs = pts.T[0]
     ys = pts.T[1]
-    sort_index = xs.argsort()
+    sort_index = xs.argsort()[::-1]
     l0 = sort_index[ys[sort_index]<limit]
     l1 = sort_index[ys[sort_index]>limit]
     return l0, l1
