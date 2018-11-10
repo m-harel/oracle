@@ -13,75 +13,107 @@ def sortline(pts,limit):
     return l0, l1
 
 
-parser = argparse.ArgumentParser(description='Read lines of arucos.')
-parser.add_argument("--line-sep", type=int, help="Position, in pixels on image, of line seperation", default=300)
-parser.add_argument("--retries", type=int, help="how many frames to accumulate for detections", default=5)
-parser.add_argument("--words", type=str, help="Load number-to-word json")
-parser.add_argument("--vis", action="store_true")
 
-args = parser.parse_args()
 
-line_sep = args.line_sep 
-vis = args.vis 
 
-words =  dict([(i,str(i)) for i in range(1000)])
-if args.words and os.path.isfile(args.words):
-    words = json.load(open(args.words,"r"))
 
-aruco_dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_7X7_1000)
-
-cap = cv2.VideoCapture(0)
-
-while(True):
-    # Capture frame-by-frame
+class WordDetector(object):
     
-    agg_ids = []
-    agg_corners = []
+    def __init__(self, line_sep=300, vis=False, retries=5, words={}, cam=0):
+        self.line_sep = line_sep
+        self.vis = vis 
+        self.retries = 5 
+        self.cam = cam
+        self.cap = cv2.VideoCapture(self.cam)
+        self.dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_7X7_1000)
+        self.wdict = words 
+    
 
-    for k in range(5):
-        ret, frame = cap.read()
-        # Our operations on the frame come here
+    def words(self, num):
+        return self.wdict.get(str(num), str(num))
+
+    def detect_in_single_frame(self, frame):
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+        corners, ids, _ = cv2.aruco.detectMarkers(gray, self.dict)
+        return corners, ids
 
-        corners, ids, foo = cv2.aruco.detectMarkers(gray, aruco_dict)
-        if ids is None:
-            continue
-        for c, i in zip(list(corners), list(ids)):
-            if i not in agg_ids:
-                agg_ids.append(i[0])
-                agg_corners.append(c)
 
-    ids = np.array(agg_ids)
-    corners = np.array(agg_corners)
-    l0 = ""
-    l1 = ""
-    if len(corners) > 0:
-        up_left = np.array([c[0][0] for c in corners])
-        l0, l1 = sortline(up_left, line_sep)
-        l0 = " ".join(words[str(x)] for x in ids[l0])
-        l1 = " ".join(words[str(x)] for x in ids[l1])
-        print("Line 1:\t\t", l0)
-        print("Line 2:\t\t", l1)
-        
-
-    if vis:
+    def visulize(self, frame, corners, ids, l0, l1):
         frame = cv2.aruco.drawDetectedMarkers(frame,corners, ids)
         width = frame.shape[1]
-        cv2.line(frame, (0, line_sep), (width, line_sep), (0,200,200))
+        cv2.line(frame, (0, self.line_sep), (width, self.line_sep), (0,200,200))
         cv2.putText(frame, l0, (1,50), cv2.FONT_HERSHEY_SIMPLEX, 1, 0)
-        cv2.putText(frame, l1, (1,line_sep+50), cv2.FONT_HERSHEY_SIMPLEX, 1, 0)
+        cv2.putText(frame, l1, (1,self.line_sep+50), cv2.FONT_HERSHEY_SIMPLEX, 1, 0)
 
         # Display the resulting frame
         cv2.imshow('frame',frame)
         key = cv2.waitKey(1) & 0xFF
         if key == ord('u'):
-            line_sep -= 5
-            print("Line sep ", line_sep)
+            self.line_sep -= 5
+            print("Line sep ", self.line_sep)
         if key == ord('d'):
-            line_sep += 5
-            print("Line sep ", line_sep)
+            self.line_sep += 5
+            print("Line sep ", self.line_sep)
         if key == ord('q'):
-            break
+            import sys
+            sys.exit(0)
 
-# When everything done, release the capture
-cap.release()
+    def detect(self):
+        agg_ids = []
+        agg_corners = []
+        l0 = ""
+        l1 = ""
+
+        for i in range(self.retries):
+            ret, frame = self.cap.read()
+            corners, ids = self.detect_in_single_frame(frame)
+
+            if ids is None:
+                continue
+            for c, i in zip(list(corners), list(ids)):
+                if i not in agg_ids:
+                    agg_ids.append(i[0])
+                    agg_corners.append(c)
+            
+            ids = np.array(agg_ids)
+            corners = np.array(agg_corners)
+
+        if len(corners) > 0:
+            up_left = np.array([c[0][0] for c in corners])
+            l0, l1 = sortline(up_left, line_sep)
+            l0 = " ".join(self.words(x) for x in ids[l0])
+            l1 = " ".join(self.words(x) for x in ids[l1])
+
+        self.visulize(frame, corners, ids, l0, l1)
+
+        return l0 + ' ' + l1
+
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Read lines of arucos.')
+    parser.add_argument("--line-sep", type=int, help="Position, in pixels on image, of line seperation", default=300)
+    parser.add_argument("--retries", type=int, help="how many frames to accumulate for detections", default=5)
+    parser.add_argument("--words", type=str, default="words.json" , help="Load number-to-word json")
+    parser.add_argument("--vis", action="store_true")
+    parser.add_argument("--cam", type=int, default=0, help="Open CV cam number")
+
+    args = parser.parse_args()
+
+    line_sep = args.line_sep 
+    vis = args.vis 
+
+    words =  {}
+    if args.words and os.path.isfile(args.words):
+        words = json.load(open(args.words,"r"))
+    
+
+    wd = WordDetector(args.line_sep,vis=args.vis, retries=args.retries,words=words, cam=args.cam)
+
+    while(True):
+        # Capture frame-by-frame
+        print(wd.detect())
+
+
+        
+
