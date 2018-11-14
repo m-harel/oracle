@@ -13,10 +13,6 @@ def sortline(pts,limit):
     return l0, l1
 
 
-
-
-
-
 class WordDetector(object):
     
     def __init__(self, line_sep=300, vis=False, retries=5, words={}, cam=0):
@@ -42,8 +38,8 @@ class WordDetector(object):
         frame = cv2.aruco.drawDetectedMarkers(frame,corners, ids)
         width = frame.shape[1]
         cv2.line(frame, (0, self.line_sep), (width, self.line_sep), (0,200,200))
-        cv2.putText(frame, l0, (1,50), cv2.FONT_HERSHEY_SIMPLEX, 1, 0)
-        cv2.putText(frame, l1, (1,self.line_sep+50), cv2.FONT_HERSHEY_SIMPLEX, 1, 0)
+        cv2.putText(frame, l0, (1,50), cv2.FONT_HERSHEY_SIMPLEX, 1,  (250,250,0))
+        cv2.putText(frame, l1, (1,self.line_sep+50), cv2.FONT_HERSHEY_SIMPLEX, 1, (250,250,0))
 
         # Display the resulting frame
         cv2.imshow('frame',frame)

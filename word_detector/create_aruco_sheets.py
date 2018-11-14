@@ -5,7 +5,7 @@ aruco_dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_7X7_1000)
 
 aruco_id = 0
 page_num = 0
-while aruco_id<200:
+while aruco_id<600:
     page_num+=1
     aruco_page = []
     for i in range(4):
