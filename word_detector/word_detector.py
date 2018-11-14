@@ -12,11 +12,6 @@ def sortline(pts,limit):
     l1 = sort_index[ys[sort_index]>limit]
     return l0, l1
 
-
-
-
-
-
 class WordDetector(object):
     
     def __init__(self, line_sep=300, vis=False, retries=5, words={}, cam=0):
@@ -24,7 +19,7 @@ class WordDetector(object):
         self.vis = vis 
         self.retries = 5 
         self.cam = cam
-        self.cap = cv2.VideoCapture(self.cam)
+        self.cap = cv2.VideoCapture('/dev/video1')
         self.dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_7X7_1000)
         self.wdict = words 
     
@@ -38,12 +33,10 @@ class WordDetector(object):
         return corners, ids
 
 
-    def visulize(self, frame, corners, ids, l0, l1):
+    def visulize(self, frame, corners, ids):
         frame = cv2.aruco.drawDetectedMarkers(frame,corners, ids)
         width = frame.shape[1]
         cv2.line(frame, (0, self.line_sep), (width, self.line_sep), (0,200,200))
-        cv2.putText(frame, l0, (1,50), cv2.FONT_HERSHEY_SIMPLEX, 1, 0)
-        cv2.putText(frame, l1, (1,self.line_sep+50), cv2.FONT_HERSHEY_SIMPLEX, 1, 0)
 
         # Display the resulting frame
         cv2.imshow('frame',frame)
@@ -81,13 +74,18 @@ class WordDetector(object):
         if len(corners) > 0:
             up_left = np.array([c[0][0] for c in corners])
             l0, l1 = sortline(up_left, line_sep)
-            l0 = " ".join(self.words(x) for x in ids[l0])
-            l1 = " ".join(self.words(x) for x in ids[l1])
 
-        self.visulize(frame, corners, ids, l0, l1)
+            l0 = [self.words(x) for x in ids[l0]]
+            l1 = [self.words(x) for x in ids[l1]]
 
-        return l0 + ' ' + l1
+            l0.reverse()
+            l1.reverse()
 
+        self.visulize(frame, corners, ids)
+
+        if len(l0) > 0 or len(l1) > 0:
+            return " ".join(l0 + l1)
+        return None
 
 
 if __name__ == '__main__':
@@ -96,7 +94,7 @@ if __name__ == '__main__':
     parser.add_argument("--retries", type=int, help="how many frames to accumulate for detections", default=5)
     parser.add_argument("--words", type=str, default="words.json" , help="Load number-to-word json")
     parser.add_argument("--vis", action="store_true")
-    parser.add_argument("--cam", type=int, default=0, help="Open CV cam number")
+    parser.add_argument("--cam", type=int, default=1, help="Open CV cam number")
 
     args = parser.parse_args()
 
@@ -111,8 +109,9 @@ if __name__ == '__main__':
     wd = WordDetector(args.line_sep,vis=args.vis, retries=args.retries,words=words, cam=args.cam)
 
     while(True):
-        # Capture frame-by-frame
-        print(wd.detect())
+        words = wd.detect()
+        if words:
+            print(words)
 
 
         
