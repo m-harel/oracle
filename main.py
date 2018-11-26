@@ -11,7 +11,7 @@ import json
 import logging
 from pygame import mixer
 
-
+bubbles = False
 
 def main_loop(words_dict):
     _tts = tts.textToSpeech()
@@ -43,7 +43,8 @@ def main_loop(words_dict):
         _tts.say(answer)
         ar.flush_serial()
 
-        #time.sleep(180)
+        if bubbles:
+            time.sleep(180)
 
 
 if __name__ == '__main__':
