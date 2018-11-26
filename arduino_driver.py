@@ -1,10 +1,12 @@
 import serial
 import serial.tools.list_ports
 import os
+import time
 
 TIME_BETWEEN_MESSAGES = 0.01
 AMBIENT_LIGHT_BYTE = 89
 PARTY_LIGHT_BYTE = 167
+WAIT_FOR_ANSWER_BYTE = 65
 
 
 def _get_port():
@@ -41,6 +43,11 @@ class ArduinoController:
         values = bytearray([PARTY_LIGHT_BYTE])
         self.ser.write(values)
 
+    def set_wait_for_answer(self):
+        print('set wait for answer')
+        values = bytearray([WAIT_FOR_ANSWER_BYTE])
+        self.ser.write(values)
+
     def read_button(self):
         if self.ser.inWaiting() == 0:
             return False
@@ -58,3 +65,14 @@ class ArduinoController:
     def flush_serial(self):
         while self.ser.inWaiting():
             self.ser.readline()
+
+
+if __name__ == '__main__':
+    ar = ArduinoController()
+    while True:
+        ar.set_ambient()
+        input("Press Enter to continue...")
+        ar.set_party()
+        input("Press Enter to continue...")
+        ar.set_wait_for_answer()
+        input("Press Enter to continue...")
