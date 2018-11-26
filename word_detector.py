@@ -12,6 +12,11 @@ def sortline(pts,limit):
     l1 = sort_index[ys[sort_index]>limit]
     return l0, l1
 
+
+
+
+
+
 class WordDetector(object):
     
     def __init__(self, line_sep=300, vis=False, retries=5, words={}, cam=0):
@@ -33,10 +38,12 @@ class WordDetector(object):
         return corners, ids
 
 
-    def visulize(self, frame, corners, ids):
+    def visulize(self, frame, corners, ids, l0, l1):
         frame = cv2.aruco.drawDetectedMarkers(frame,corners, ids)
         width = frame.shape[1]
         cv2.line(frame, (0, self.line_sep), (width, self.line_sep), (0,200,200))
+        cv2.putText(frame, l0, (1,50), cv2.FONT_HERSHEY_SIMPLEX, 1, 0)
+        cv2.putText(frame, l1, (1,self.line_sep+50), cv2.FONT_HERSHEY_SIMPLEX, 1, 0)
 
         # Display the resulting frame
         cv2.imshow('frame',frame)
@@ -51,9 +58,7 @@ class WordDetector(object):
             import sys
             sys.exit(0)
 
-    def detect(self, test=False):
-        if test:
-            return 'test test test'
+    def detect(self):
         agg_ids = []
         agg_corners = []
         l0 = ""
@@ -73,21 +78,16 @@ class WordDetector(object):
             ids = np.array(agg_ids)
             corners = np.array(agg_corners)
 
-        if self.vis:
-            self.visulize(frame, corners, ids)
+        if len(corners) > 0:
+            up_left = np.array([c[0][0] for c in corners])
+            l0, l1 = sortline(up_left, line_sep)
+            l0 = " ".join(self.words(x) for x in ids[l0])
+            l1 = " ".join(self.words(x) for x in ids[l1])
 
-        if len(corners)  == 0:
-            return None
+        self.visulize(frame, corners, ids, l0, l1)
 
-        up_left = np.array([c[0][0] for c in corners])
-        l0, l1 = sortline(up_left, self.line_sep)
+        return l0 + ' ' + l1
 
-        l0 = [self.words(x) for x in ids[l0]]
-        l1 = [self.words(x) for x in ids[l1]]
-
-        if len(l0) > 0 or len(l1) > 0:
-            return " ".join(l0 + l1)
-        return None
 
 
 if __name__ == '__main__':
@@ -95,13 +95,13 @@ if __name__ == '__main__':
     parser.add_argument("--line-sep", type=int, help="Position, in pixels on image, of line seperation", default=300)
     parser.add_argument("--retries", type=int, help="how many frames to accumulate for detections", default=5)
     parser.add_argument("--words", type=str, default="words.json" , help="Load number-to-word json")
-    parser.add_argument("--vis", action="store_false")
-    parser.add_argument("--cam", type=int, default=1, help="Open CV cam number")
+    parser.add_argument("--vis", action="store_true")
+    parser.add_argument("--cam", type=int, default=0, help="Open CV cam number")
 
     args = parser.parse_args()
 
-    line_sep = args.line_sep
-    vis = args.vis
+    line_sep = args.line_sep 
+    vis = args.vis 
 
     words =  {}
     if args.words and os.path.isfile(args.words):
@@ -111,9 +111,8 @@ if __name__ == '__main__':
     wd = WordDetector(args.line_sep,vis=args.vis, retries=args.retries,words=words, cam=args.cam)
 
     while(True):
-        words = wd.detect()
-        if words:
-            print(words)
+        # Capture frame-by-frame
+        print(wd.detect())
 
 
         

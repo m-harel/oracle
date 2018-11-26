@@ -1,30 +1,41 @@
-from tinydb import TinyDB, Query, where
-import csv
+from pyexcel_ods import get_data
+from collections import defaultdict
+import json
 
-db = TinyDB('qna.json')
-questions = set([line['question'] for line in db])
-print('questions %s' %questions)
 
 def get_answer(question):
     return "random answer. not even random. go fuck yourself %s" % question
 
 
-def update_from_csv(csv_file):
-    with open(csv_file) as csvfile:
-        reader = csv.reader(csvfile)
-        header = next(reader)
-        print('header: %s' % header)
-        for i, row in enumerate(reader):
-            User = Query()
-            print('row %d: question: %s, answers %s' % (i, row[1], row[2]))
-            #p = db.search(User.question == row[1], User.answer == row[2])
-            #print(p)
-            db.insert({'question': row[1], 'answer': row[2]})
+def sanitize(phrase):
+    phrase = "".join([c for c in phrase if c.isalpha() or c.isspace()])
+    phrase = phrase.lower().strip()
+    return phrase
+
+
+def update_from_ods(ods_file):
+
+    data = get_data(ods_file)
+
+
+    output = defaultdict(set)
+
+    for line in data["Form Responses 1"][1:]:
+        if len(line) < 3:
+            continue
+        datetime = line[0]
+        question = sanitize(line[1])
+        answer = line[2]
+
+        output[question].add(answer)
+    json.dump(dict(output), open("qna.json"))
+
 
 def print_db():
     for a in db:
         print(a)
 
+
 if __name__ == '__main__':
 #    print_db()
-    update_from_csv('rsp.csv')
+    update_from_ods('rsp.ods')
