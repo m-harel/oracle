@@ -17,7 +17,7 @@ class WordDetector(object):
     def __init__(self, line_sep=300, vis=False, retries=5, words={}, cam=0):
         self.line_sep = line_sep
         self.vis = vis 
-        self.retries = 5 
+        self.retries = retries
         self.cam = cam
         self.cap = cv2.VideoCapture('/dev/video1')
         self.dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_7X7_1000)
@@ -51,7 +51,9 @@ class WordDetector(object):
             import sys
             sys.exit(0)
 
-    def detect(self):
+    def detect(self, test=False):
+        if test:
+            return 'test test test'
         agg_ids = []
         agg_corners = []
         l0 = ""
@@ -71,17 +73,17 @@ class WordDetector(object):
             ids = np.array(agg_ids)
             corners = np.array(agg_corners)
 
-        if len(corners) > 0:
-            up_left = np.array([c[0][0] for c in corners])
-            l0, l1 = sortline(up_left, line_sep)
+        if self.vis:
+            self.visulize(frame, corners, ids)
 
-            l0 = [self.words(x) for x in ids[l0]]
-            l1 = [self.words(x) for x in ids[l1]]
+        if len(corners)  == 0:
+            return None
 
-            l0.reverse()
-            l1.reverse()
+        up_left = np.array([c[0][0] for c in corners])
+        l0, l1 = sortline(up_left, self.line_sep)
 
-        self.visulize(frame, corners, ids)
+        l0 = [self.words(x) for x in ids[l0]]
+        l1 = [self.words(x) for x in ids[l1]]
 
         if len(l0) > 0 or len(l1) > 0:
             return " ".join(l0 + l1)
@@ -93,13 +95,13 @@ if __name__ == '__main__':
     parser.add_argument("--line-sep", type=int, help="Position, in pixels on image, of line seperation", default=300)
     parser.add_argument("--retries", type=int, help="how many frames to accumulate for detections", default=5)
     parser.add_argument("--words", type=str, default="words.json" , help="Load number-to-word json")
-    parser.add_argument("--vis", action="store_true")
+    parser.add_argument("--vis", action="store_false")
     parser.add_argument("--cam", type=int, default=1, help="Open CV cam number")
 
     args = parser.parse_args()
 
-    line_sep = args.line_sep 
-    vis = args.vis 
+    line_sep = args.line_sep
+    vis = args.vis
 
     words =  {}
     if args.words and os.path.isfile(args.words):
