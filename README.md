@@ -2,14 +2,14 @@ Requirements:
 opencv-contrib-python, json, numpy 
 
 # Hardware
-[ ] Connect cubes
-[ ] Solder pixels to the shield
+[x] Connect cubes
+[x] Solder pixels to the shield
 Sequence (LEDs + Cubes)
     [ ] Ambient
     [ ] Party
-[ ] Switch sequences on computer command
+[x] Switch sequences on computer command
 [ ] Connect Button 
-[ ] Install button to the box
+[ ] Install button on the box
 
 # Software
 [ ] Spread the form like an STD

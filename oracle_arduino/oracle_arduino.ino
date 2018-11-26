@@ -80,6 +80,7 @@ void process_party()
   FillLEDsFromPaletteColors( startIndex);
   
   FastLED.show();
+  rainbowCycle()
 }
 
 void process_wait()
@@ -292,3 +293,33 @@ const TProgmemPalette16 myRedWhiteBluePalette_p PROGMEM =
 // palette to Green (0,255,0) and Blue (0,0,255), and then retrieved 
 // the first sixteen entries from the virtual palette (of 256), you'd get
 // Green, followed by a smooth gradient from green-to-blue, and then Blue.
+
+
+///
+
+
+// Slightly different, this makes the rainbow equally distributed throughout
+void rainbowCycle() {
+  uint16_t i;
+
+  for(i=0; i< NUMPIXELS; i++) {
+    strip.setPixelColor(i, Wheel(((i * 256 / strip.numPixels()) + beatsin8(10)) & 255));
+  }
+  strip.show();
+  
+}
+
+
+// Input a value 0 to 255 to get a color value.
+// The colours are a transition r - g - b - back to r.
+uint32_t Wheel(byte WheelPos) {
+  if(WheelPos < 85) {
+   return strip.Color(WheelPos * 3, 255 - WheelPos * 3, 0);
+  } else if(WheelPos < 170) {
+   WheelPos -= 85;
+   return strip.Color(255 - WheelPos * 3, 0, WheelPos * 3);
+  } else {
+   WheelPos -= 170;
+   return strip.Color(0, WheelPos * 3, 255 - WheelPos * 3);
+  }
+}
