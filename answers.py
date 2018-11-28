@@ -17,7 +17,6 @@ def update_from_ods(ods_file):
 
     data = get_data(ods_file)
 
-
     output = defaultdict(set)
 
     for line in data["Form Responses 1"][1:]:
@@ -29,11 +28,6 @@ def update_from_ods(ods_file):
 
         output[question].add(answer)
     json.dump(dict(output), open("qna.json"))
-
-
-def print_db():
-    for a in db:
-        print(a)
 
 
 if __name__ == '__main__':
