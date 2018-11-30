@@ -5,7 +5,8 @@
 
 enum STATE_TYPE{AMBIENT, PARTY, WAIT_FOR_ANSWER};  
 
-const int buttonPin = 3; 
+const int buttonPin = 2; // "Button 1"
+const int togglePINT = 4; // "Button 2"
 unsigned long last_message_send = 0;
 
 #define LED_PIN     9
@@ -13,6 +14,9 @@ unsigned long last_message_send = 0;
 #define BRIGHTNESS  64
 #define LED_TYPE    WS2811
 #define COLOR_ORDER GRB
+
+#define PIXIE_PIN  11
+
 CRGB leds[NUM_LEDS];
 
 #define UPDATES_PER_SECOND 100
