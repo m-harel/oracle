@@ -1,8 +1,13 @@
 import cv2
 import numpy as np 
 import argparse
-import os
+from pyexcel_ods import get_data
 import json
+
+try:
+    words_dict = json.load(open("words.json","r"))
+except:
+    words_dict = {}
 
 def sortline(pts,limit):
     xs = pts.T[0]
@@ -13,24 +18,23 @@ def sortline(pts,limit):
     return l0, l1
 
 
-
-
-
-
 class WordDetector(object):
-    
-    def __init__(self, line_sep=300, vis=False, retries=5, words={}, cam=0):
+    def __init__(self, line_sep=300, vis=False, retries=5, cam=0):
         self.line_sep = line_sep
         self.vis = vis 
         self.retries = retries
         self.cam = cam
         self.cap = cv2.VideoCapture('/dev/video1')
         self.dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_7X7_1000)
-        self.wdict = words 
+        self.wdict = words_dict
     
 
     def words(self, num):
-        return self.wdict.get(str(num), str(num))
+        for word, value in self.wdict.items():
+            if num == value['id']:
+                return word
+
+        return str(num)
 
     def detect_in_single_frame(self, frame):
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -89,31 +93,42 @@ class WordDetector(object):
         return l0 + ' ' + l1
 
 
+def create_words_from_ods():
+    data = get_data('words_list.ods')
+
+    output = {}
+
+    for i, line in enumerate(data["Sheet1"]):
+        print(line)
+        if len(line) < 3:
+            continue
+
+        word = line[0].lower()
+        id = line[1]
+        rank = line[2]
+        output[word] = {'rank': rank, 'id':id}
+
+    print(output)
+    json.dump(dict(output), open("words.json", "w"))
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Read lines of arucos.')
     parser.add_argument("--line-sep", type=int, help="Position, in pixels on image, of line seperation", default=300)
     parser.add_argument("--retries", type=int, help="how many frames to accumulate for detections", default=5)
-    parser.add_argument("--words", type=str, default="words.json" , help="Load number-to-word json")
     parser.add_argument("--vis", action="store_true")
     parser.add_argument("--cam", type=int, default=0, help="Open CV cam number")
 
     args = parser.parse_args()
 
-    line_sep = args.line_sep 
-    vis = args.vis 
+    line_sep = args.line_sep
+    vis = args.vis
 
-    words =  {}
-    if args.words and os.path.isfile(args.words):
-        words = json.load(open(args.words,"r"))
-    
-
-    wd = WordDetector(args.line_sep,vis=args.vis, retries=args.retries,words=words, cam=args.cam)
+    wd = WordDetector(args.line_sep,vis=args.vis, retries=args.retries, cam=args.cam)
 
     while(True):
         # Capture frame-by-frame
         print(wd.detect())
-
+    # create_words_from_ods()
 
         
 

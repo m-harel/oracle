@@ -5,7 +5,7 @@
 
 enum STATE_TYPE{AMBIENT, PARTY, WAIT_FOR_ANSWER};  
 
-const int buttonPin = 3; 
+const int buttonPin = 4; 
 unsigned long last_message_send = 0;
 
 #define LED_PIN     9
@@ -80,7 +80,6 @@ void process_party()
   FillLEDsFromPaletteColors( startIndex);
   
   FastLED.show();
-  rainbowCycle()
 }
 
 void process_wait()
@@ -95,7 +94,7 @@ void process_wait()
 
 void check_button(){
   int buttonState = digitalRead(buttonPin);
-    
+      
   if (buttonState == 0)
   {
     unsigned long now = millis();
@@ -272,54 +271,3 @@ const TProgmemPalette16 myRedWhiteBluePalette_p PROGMEM =
 
 
 
-// Additionl notes on FastLED compact palettes:
-//
-// Normally, in computer graphics, the palette (or "color lookup table")
-// has 256 entries, each containing a specific 24-bit RGB color.  You can then
-// index into the color palette using a simple 8-bit (one byte) value.
-// A 256-entry color palette takes up 768 bytes of RAM, which on Arduino
-// is quite possibly "too many" bytes.
-//
-// FastLED does offer traditional 256-element palettes, for setups that
-// can afford the 768-byte cost in RAM.
-//
-// However, FastLED also offers a compact alternative.  FastLED offers
-// palettes that store 16 distinct entries, but can be accessed AS IF
-// they actually have 256 entries; this is accomplished by interpolating
-// between the 16 explicit entries to create fifteen intermediate palette
-// entries between each pair.
-//
-// So for example, if you set the first two explicit entries of a compact 
-// palette to Green (0,255,0) and Blue (0,0,255), and then retrieved 
-// the first sixteen entries from the virtual palette (of 256), you'd get
-// Green, followed by a smooth gradient from green-to-blue, and then Blue.
-
-
-///
-
-
-// Slightly different, this makes the rainbow equally distributed throughout
-void rainbowCycle() {
-  uint16_t i;
-
-  for(i=0; i< NUMPIXELS; i++) {
-    strip.setPixelColor(i, Wheel(((i * 256 / strip.numPixels()) + beatsin8(10)) & 255));
-  }
-  strip.show();
-  
-}
-
-
-// Input a value 0 to 255 to get a color value.
-// The colours are a transition r - g - b - back to r.
-uint32_t Wheel(byte WheelPos) {
-  if(WheelPos < 85) {
-   return strip.Color(WheelPos * 3, 255 - WheelPos * 3, 0);
-  } else if(WheelPos < 170) {
-   WheelPos -= 85;
-   return strip.Color(255 - WheelPos * 3, 0, WheelPos * 3);
-  } else {
-   WheelPos -= 170;
-   return strip.Color(0, WheelPos * 3, 255 - WheelPos * 3);
-  }
-}

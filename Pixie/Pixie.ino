@@ -32,9 +32,9 @@ void setup() {
 
   Serial.println("Red!");
   for(i=0; i< NUMPIXELS; i++)
-    strip.setPixelColor(i, 255, 0, 0);
+    strip.setPixelColor(i, 255, 255, 255);
   strip.show();
-  delay(300);
+/*  delay(300);
 
   Serial.println("Green!");
   for(i=0; i< NUMPIXELS; i++)
@@ -46,12 +46,17 @@ void setup() {
   for(i=0; i< NUMPIXELS; i++)
     strip.setPixelColor(i, 0, 0, 255);
   strip.show();
-  delay(300);
+  delay(300);*/
 }
 
 void loop() {
-  Serial.println("Rainbow!");
-  rainbowCycle(10);
+  int i;
+  for(i=0; i< NUMPIXELS; i++)
+    strip.setPixelColor(i, 200, 0, 0);
+  strip.show();
+  delay(5);
+/*  Serial.println("Rainbow!");
+  rainbowCycle(10);*/
 }
 
 

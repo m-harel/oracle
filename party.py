@@ -5,7 +5,6 @@ from os import listdir
 from os.path import isfile, join
 party_songs_dir = '/home/private/oracle/party_songs'
 party_songs_addres = [join(party_songs_dir, f) for f in listdir(party_songs_dir) if isfile(join(party_songs_dir, f))]
-print(party_songs_addres)
 
 def get_random_song():
     return random.choice(party_songs_addres)

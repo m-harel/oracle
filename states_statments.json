@@ -1,0 +1,27 @@
+{"start_party": ["I am going to conviene with the demons and ask for their answer, dance for them while I am away to show your appreciation, and receive their help",
+"I will now decend to the underworld where I will ask the lost souls to answer your question. Dance for them while I am away, they like mortals who can shake their asses!",
+"That's a dumb fucking question, mortal. Fine I will now go speak with the demons and ask for their help. Dance while I am away to show them your appreciation, and earn their favor",
+"I’m leaving now, I will ask the demons for an answer to your question, I’m sure they don’t have anything else better to do. Dance for the demons while I am away to show how much you admire them"
+],
+
+"start_answer": ["The demons found your dance Embarassing. They will give you the answer, but only out of pitty. Their answer is",
+"I have returned from the underworld, your dance pleases the lost souls. They say ",
+"I came back. Did you miss me? The demons found your question amusing, typical mortal question. Their answer is "],
+
+"Now_leave": ["Go away now, I have to get my beauty sleep before the next mortal bothers me with a question",
+"I am done helping, mortal. It's about time you got the fuck out of here",
+"I hope you are pleased with the answer you got. Actually, never mind, I don’t actually care",
+"The demon lord asked that you come up with a better question next time"
+],
+
+"Pressed_during_answer": ["Let me finish answering, stupid mortal",
+"Stop pushing the button! I am not done answering yet"],
+
+"No_question": ["You need to ask a question first. Place words from the bowl in the highlighted brackets, then, press the button again",
+"It seems like you didn’t answer a question. place the words from the bowl in the brackets, and then ask the"],
+
+"Not_actual_english": ["What? That doesn't sound like actual english. go away and learn some english before you bother me again",
+"That doesn't sound like english to me. Assemble a different question, try to use proper english this time, mortal"],
+
+"Asked_recently": ["You had asked this recently, I don't feel like answering it again. Ask something else", "Stop asking the same question, dumbass"]
+}
