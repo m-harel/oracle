@@ -90,7 +90,7 @@ void addGlitter( fract8 chanceOfGlitter)
 void confetti() 
 {
   // random colored speckles that blink in and fade smoothly
-  fadeToBlackBy( leds, NUM_LEDS, 10);
+  fadeToBlackBy( leds, NUM_LEDS, 1);
   int pos = random16(NUM_LEDS);
   leds[pos] += CHSV( gHue + random8(64), 200, 255);
 }
@@ -98,9 +98,17 @@ void confetti()
 void sinelon()
 {
   // a colored dot sweeping back and forth, with fading trails
-  fadeToBlackBy( leds, NUM_LEDS, 20);
-  int pos = beatsin16( 13, 0, NUM_LEDS-1 );
-  leds[pos] += CHSV( gHue, 255, 192);
+  // fadeToBlackBy( leds, NUM_LEDS, 64);
+  // int pos = beatsin16( 13, 0, NUM_LEDS-1 );
+  // leds[pos] += CHSV( gHue, 255, 192);
+  for(int i; i<NUM_LEDS; i++)
+  {
+    uint16_t h = (beatsin8(20, 0, 300) + i ) % 255;
+    uint8_t brightness = beatsin8(20, 0, 255)
+    CHSV color = CHSV(h, s, v);
+    leds[i] = CHSV(h, brightness, 255)
+  }
+  FastLED.show()
 }
 
 void bpm()

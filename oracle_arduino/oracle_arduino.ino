@@ -10,12 +10,12 @@ enum STATE_TYPE
   WAIT_FOR_ANSWER
 };
 
-const int buttonPin = 2;  // "Button 1"
-const int togglePINT = 4; // "Button 2"
+const int buttonPin = 4;  // "Button 1"
+const int togglePINT = 2; // "Button 2"
 unsigned long last_message_send = 0;
 
 #define LED_PIN 9
-#define NUM_LEDS 56
+#define NUM_LEDS 18
 #define PIXIE_NUM 4
 #define BRIGHTNESS 64
 #define LED_TYPE WS2811
@@ -75,15 +75,9 @@ void process_state()
 
 void process_ambient()
 {
-  EVERY_N_MILLISECONDS(5)
-  {
-    static uint8_t startIndex = 0;
-    startIndex = startIndex + 1; /* motion speed */
+  sinelon();
 
-    FillLEDsFromPaletteColors(startIndex);
-
-    FastLED.show();
-  }
+  FastLED.show();
 }
 
 uint8_t gHue = 0; // rotating "base color"
@@ -137,7 +131,6 @@ void process_wait()
 void check_button()
 {
   int buttonState = digitalRead(buttonPin);
-
   if (buttonState == 0)
   {
     unsigned long now = millis();
@@ -169,6 +162,18 @@ void check_state_change()
     }
     flush_serial();
   }
+}
+
+void sinelon()
+{
+  uint16_t h = beatsin8(10, 0, 255);
+  for (int i; i < NUM_LEDS; i++)
+  {
+    uint16_t h_final =  80+sin8(h+i)/16;
+    uint8_t brightness = beatsin8(16, 120, 224);
+    leds[i] = CHSV(h_final, 250, brightness);
+  }
+  FastLED.show();
 }
 
 void setAmbientLight()
