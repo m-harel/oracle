@@ -12,18 +12,13 @@ except:
 def get_answer(question):
     if question in qna.keys():
         list_of_answers = [(ans_id, a) for ans_id, a in qna[question].items()]
-        print('best answers - %s' % list_of_answers)
         return random.choice(list_of_answers)
 
-    print('question: %s ' % question)
     question_rank = OrderedDict()
     for q in qna.keys():
         question_rank[q] = rate_questions(question, q)
 
-    print('question rank:')
-    print(question_rank)
-    best_answers = get_the_best_n_answer_from_dict(question_rank, 10)
-    print('best answers - %s' % best_answers)
+    best_answers = get_the_best_n_answer_from_dict(question_rank, 3)
     return random.choice(best_answers)
 
 
@@ -31,7 +26,7 @@ def get_the_best_n_answer_from_dict(question_rank, n):
     best_answers = []
     question_sorted_by_rank = sorted(question_rank.items(), key=lambda kv: kv[1])
     question_sorted_by_rank.reverse()
-    print(question_sorted_by_rank)
+    print(question_sorted_by_rank[:10])
     for question in question_sorted_by_rank:
         for ans_id, a in qna[question[0]].items():
             best_answers.append((ans_id, a))
@@ -114,4 +109,4 @@ if __name__ == '__main__':
     #update_from_ods()
     #words = create_histogram()
     # create_empty_word_dict(words)
-    print(get_answer('can an arab be a friend'))
+    print(get_answer('why do i feel so alone'))

@@ -29,12 +29,12 @@ void setup() {
   // Serial1.begin(115200);  // <- Alt. if using hardware serial port
 
   strip.setBrightness(200);  // Adjust as necessary to avoid blinding
-
+  /*
   Serial.println("Red!");
   for(i=0; i< NUMPIXELS; i++)
     strip.setPixelColor(i, 255, 255, 255);
-  strip.show();
-/*  delay(300);
+  strip.show();*/
+  delay(300);
 
   Serial.println("Green!");
   for(i=0; i< NUMPIXELS; i++)
@@ -46,17 +46,17 @@ void setup() {
   for(i=0; i< NUMPIXELS; i++)
     strip.setPixelColor(i, 0, 0, 255);
   strip.show();
-  delay(300);*/
+  delay(300);
 }
 
 void loop() {
-  int i;
+  /*int i;
   for(i=0; i< NUMPIXELS; i++)
-    strip.setPixelColor(i, 200, 0, 0);
+    strip.setPixelColor(i, 0, 0, 255);
   strip.show();
-  delay(5);
-/*  Serial.println("Rainbow!");
-  rainbowCycle(10);*/
+  delay(5);*/
+  Serial.println("Rainbow!");
+  rainbowCycle(5);
 }
 
 

@@ -84,11 +84,12 @@ class WordDetector(object):
 
         if len(corners) > 0:
             up_left = np.array([c[0][0] for c in corners])
-            l0, l1 = sortline(up_left, line_sep)
+            l0, l1 = sortline(up_left, self.line_sep)
             l0 = " ".join(self.words(x) for x in ids[l0])
             l1 = " ".join(self.words(x) for x in ids[l1])
 
-        self.visulize(frame, corners, ids, l0, l1)
+        if self.vis:
+            self.visulize(frame, corners, ids, l0, l1)
 
         return l0 + ' ' + l1
 

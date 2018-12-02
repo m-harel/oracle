@@ -34,17 +34,17 @@ class ArduinoController:
 
     # Set a color to a desired LED by controlling the RGB values
     def set_ambient(self):
-        print('set ambient')
+        #print('set ambient')
         values = bytearray([AMBIENT_LIGHT_BYTE])
         self.ser.write(values)
 
     def set_party(self):
-        print('set party')
+        #print('set party')
         values = bytearray([PARTY_LIGHT_BYTE])
         self.ser.write(values)
 
     def set_wait_for_answer(self):
-        print('set wait for answer')
+        #print('set wait for answer')
         values = bytearray([WAIT_FOR_ANSWER_BYTE])
         self.ser.write(values)
 

@@ -4,9 +4,9 @@ from pygame import mixer
 TEMP_FILE = "temp.mp3"
 
 tts_eng = pyttsx3.init()
-voices = tts_eng.getProperty('voices')
-tts_eng.setProperty('voice', 'english')
-tts_eng.setProperty('volume', 1)
+
+tts_eng.setProperty('volume', 10)
+tts_eng.setProperty('rate', 100)
 
 
 def text_to_file(s):

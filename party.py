@@ -9,6 +9,15 @@ party_songs_addres = [join(party_songs_dir, f) for f in listdir(party_songs_dir)
 def get_random_song():
     return random.choice(party_songs_addres)
 
+def play_a_file(file, wait=True):
+    mixer.music.load(file)
+    mixer.music.play()
+
+    if wait:
+        while mixer.music.get_busy():
+            time.sleep(0.5)
+
+
 def play_random_song(wait=True):
     song_addr = get_random_song()
     print("song is %s" % song_addr)
