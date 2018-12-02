@@ -1,0 +1,4 @@
+B1 - Button 1 - 2
+B2 - Button 2 - 4
+P - Pixie - 11
+C - Cubes - 9

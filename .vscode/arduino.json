@@ -1,0 +1,5 @@
+{
+    "board": "arduino:avr:uno",
+    "port": "/dev/cu.usbmodem143101",
+    "sketch": "oracle_arduino/oracle_arduino.ino"
+}
