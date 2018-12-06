@@ -89,8 +89,8 @@ def grammer_checker(question):
 def main_loop():
     wd = word_detector.WordDetector(retries=20)
     ar = arduino_driver.ArduinoController()
-    logging.info('start loop')
     while True:
+        logging.info('start loop')
         question = get_question(ar, wd)
         if not grammer_checker(question):
             play_statement(random.choice(no_actual_question))
@@ -99,18 +99,12 @@ def main_loop():
         play_statement(random.choice(start_party_states))
         logging.info("start party")
         ar.set_party()
-        party.play_random_song(wait=False)
+        party.play_random_song()
         answer = answers.get_answer(question)
 
         logging.info('answer - %s' % str(answer))
         ar.flush_serial()
-        time.sleep(2)
-        while mixer.music.get_busy():
-            # if ar.read_button():
-            #     mixer.music.pause()
-            #     play_statement(random.choice(pressed_during_answer))
-            #     mixer.music.unpause()
-            time.sleep(3)
+
         mixer.music.stop()
         logging.info('party end')
         ar.set_ambient()
@@ -124,11 +118,11 @@ def main_loop():
 
 if __name__ == '__main__':
     mixer.init()
-    main_loop()
+    #main_loop()
 
-    # while True:
-    #     try:
-    #         main_loop()
-    #     except Exception as e:
-    #         logging.info('problem ' + str(e))
+    while True:
+        try:
+            main_loop()
+        except Exception as e:
+            logging.info('problem ' + str(e))
     #play_answer(('s', 'You are not funny, stop pretend that you are'))

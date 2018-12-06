@@ -19,7 +19,7 @@ def play_a_file(file, wait=True):
 
 
 def play_random_song(wait=True):
-    song_addr = get_random_song()
+    song_addr = 'party_songs/1.mp3' #get_random_song()
     print("song is %s" % song_addr)
     mixer.music.load(song_addr)
     mixer.music.play()

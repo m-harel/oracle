@@ -1,4 +1,7 @@
 #include "FastLED.h"
+#include "SoftwareSerial.h"
+#include "Adafruit_Pixie.h"
+
 #define AMBIENT_LIGHT_BYTE 89
 #define PARTY_LIGHT_BYTE 167
 #define WAIT_FOR_ANSWER_BYTE 65
@@ -21,7 +24,15 @@ unsigned long last_message_send = 0;
 #define LED_TYPE WS2811
 #define COLOR_ORDER GRB
 
-#define PIXIE_PIN 11
+
+#define NUMPIXELS 3 // Number of Pixies in the strip
+#define PIXIEPIN  11 // Pin number for SoftwareSerial output
+
+
+SoftwareSerial pixieSerial(-1, PIXIEPIN);
+
+Adafruit_Pixie strip = Adafruit_Pixie(NUMPIXELS, &pixieSerial);
+
 
 CRGB leds[NUM_LEDS];
 
@@ -43,6 +54,10 @@ void setup()
   FastLED.addLeds<LED_TYPE, LED_PIN, COLOR_ORDER>(leds, NUM_LEDS).setCorrection(TypicalLEDStrip);
   FastLED.setBrightness(BRIGHTNESS);
 
+  pixieSerial.begin(115200); // Pixie REQUIRES this baud rate
+  strip.setBrightness(200);  // Adjust as necessary to avoid blinding
+  
+
   currentPalette = RainbowColors_p;
   currentBlending = LINEARBLEND;
 
@@ -55,6 +70,10 @@ void loop()
   process_state();
   check_button();
   check_state_change();
+
+ for(int i=0; i< NUMPIXELS; i++)
+    strip.setPixelColor(i, 200, 200, 200);
+  strip.show();
 }
 
 void process_state()
