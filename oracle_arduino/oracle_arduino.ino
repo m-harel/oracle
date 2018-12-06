@@ -15,7 +15,7 @@ const int togglePINT = 2; // "Button 2"
 unsigned long last_message_send = 0;
 
 #define LED_PIN 9
-#define NUM_LEDS 18
+#define NUM_LEDS 20
 #define PIXIE_NUM 4
 #define BRIGHTNESS 64
 #define LED_TYPE WS2811

@@ -124,7 +124,7 @@ if __name__ == '__main__':
     line_sep = args.line_sep
     vis = args.vis
 
-    wd = WordDetector(args.line_sep,vis=args.vis, retries=args.retries, cam=args.cam)
+    wd = WordDetector(args.line_sep,vis=True, retries=args.retries, cam=args.cam)
 
     while(True):
         # Capture frame-by-frame

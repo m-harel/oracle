@@ -4,9 +4,8 @@ from pygame import mixer
 TEMP_FILE = "temp.mp3"
 
 tts_eng = pyttsx3.init()
-
 tts_eng.setProperty('volume', 10)
-tts_eng.setProperty('rate', 100)
+tts_eng.setProperty('rate', 50)
 
 
 def text_to_file(s):
@@ -29,6 +28,6 @@ def say(s):
 if __name__ == '__main__':
     mixer.init()
  #   print('check tts')
-    say('check text to speech, it is our new feature')
+    say("don't stop believing")
     # say('I am not from here, but I can solve you problems')
     # say('check text to speech, it is our new feature')

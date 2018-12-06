@@ -18,7 +18,7 @@ def get_answer(question):
     for q in qna.keys():
         question_rank[q] = rate_questions(question, q)
 
-    best_answers = get_the_best_n_answer_from_dict(question_rank, 3)
+    best_answers = get_the_best_n_answer_from_dict(question_rank, 2)
     return random.choice(best_answers)
 
 
@@ -60,17 +60,19 @@ def update_from_ods():
 
     output = {}
 
-    for i, line in enumerate(data["Form Responses 1"][1:]):
+    for line in data["Form Responses 1"][1:]:
         if len(line) < 3:
             continue
-        datetime = line[0]
-        question = sanitize(line[1])
-        answer = line[2]
+        print(line)
+        number = line[0]
+        question = sanitize(line[2])
+        answer = line[3]
         if question not in output.keys():
             output[question] = {}
-        output[question][i] = answer
+        output[question][number] = answer
 
     print(output)
+    print(sum([len(question[1].keys()) for question in output.items()]))
     json.dump(dict(output), open("qna.json", "w"))
 
 def create_histogram():
@@ -105,8 +107,16 @@ def create_empty_word_dict(words):
     print(output)
     json.dump(dict(output), open("words.json", "w"))
 
+def start_question_words():
+    star_words = set()
+    for question in qna.keys():
+        star_words.add(question.split()[0])
+
+    print(star_words)
+
 if __name__ == '__main__':
     #update_from_ods()
     #words = create_histogram()
     # create_empty_word_dict(words)
-    print(get_answer('why do i feel so alone'))
+    #start_question_words()
+    print(get_answer('why the sun is so bright'))

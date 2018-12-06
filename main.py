@@ -12,8 +12,15 @@ from pygame import mixer
 import tts
 import os
 from os.path import isfile, join
+import datetime
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(threadName)-12.12s] [%(levelname)-5.5s]  %(message)s",
+    handlers=[
+        logging.FileHandler("logs/oracle.log"),
+        logging.StreamHandler()
+    ])
 
 bubbles = False
 states_statments = json.load(open("states_statments.json","r"))
@@ -23,7 +30,8 @@ start_answer = ['B1.mp3', 'B2.mp3', 'B3.mp3']
 now_leave = ['C1.mp3', 'C2.mp3', 'C3.mp3', 'C4.mp3']
 pressed_during_answer = ['D1.mp3', 'D2.mp3']
 no_question = ['E1.mp3', 'E2.mp3', 'E3.mp3']
-asked_recently = ['G1.mp3']
+asked_recently = ['F1.mp3', 'F2.mp3']
+no_actual_question = ['E3.mp3']
 
 
 answers_dir = '/home/private/oracle/answers_mp3'
@@ -51,6 +59,7 @@ def get_question(ar, wd):
             time.sleep(0.1)
             continue
         logging.info('button pushed')
+
         words = wd.detect()
         print(words)
         if len(words) < 2:
@@ -63,13 +72,19 @@ def get_question(ar, wd):
             play_statement(random.choice(asked_recently))
             ar.flush_serial()
             continue
+        if 4 <= datetime.datetime.now().hour <= 7:
+            logging.info('push in the night')
+            tts.say('I will answer you, but you should go to sleep afterward')
+
         all_questions.append(words)
         logging.info('question %s' % words)
         logging.info("number of questions from the begining of the world is %d" % len(all_questions))
         return words
 
+legal_start_words = ['dont', 'do', 'how', 'are', 'should', 'i', 'will', 'does', 'what', 'lets', 'is', 'when', 'where', 'who', 'could', 'can', 'why', 'am']
+
 def grammer_checker(question):
-    return True
+    return question.split()[0] in legal_start_words
 
 def main_loop():
     wd = word_detector.WordDetector(retries=20)
@@ -78,7 +93,8 @@ def main_loop():
     while True:
         question = get_question(ar, wd)
         if not grammer_checker(question):
-            tts.say(random.choice(states_statments['Not_actual_english']))
+            play_statement(random.choice(no_actual_question))
+            ar.flush_serial()
             continue
         play_statement(random.choice(start_party_states))
         logging.info("start party")
@@ -86,30 +102,33 @@ def main_loop():
         party.play_random_song(wait=False)
         answer = answers.get_answer(question)
 
-        logging.info(answer)
+        logging.info('answer - %s' % str(answer))
         ar.flush_serial()
+        time.sleep(2)
         while mixer.music.get_busy():
-            if ar.read_button():
-                mixer.music.pause()
-                play_statement(random.choice(pressed_during_answer))
-                mixer.music.unpause()
+            # if ar.read_button():
+            #     mixer.music.pause()
+            #     play_statement(random.choice(pressed_during_answer))
+            #     mixer.music.unpause()
             time.sleep(3)
         mixer.music.stop()
         logging.info('party end')
         ar.set_ambient()
-        time.sleep(2)
 
         play_statement(random.choice(start_answer))
         play_answer(answer)
-        time.sleep(1)
+        time.sleep(0.4)
         play_statement(random.choice(now_leave))
         ar.flush_serial()
-
-        if bubbles:
-            time.sleep(180)
 
 
 if __name__ == '__main__':
     mixer.init()
-    #main_loop()
-    play_answer(('s', 'You are not funny, stop pretend that you are'))
+    main_loop()
+
+    # while True:
+    #     try:
+    #         main_loop()
+    #     except Exception as e:
+    #         logging.info('problem ' + str(e))
+    #play_answer(('s', 'You are not funny, stop pretend that you are'))
